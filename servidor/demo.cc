@@ -11,7 +11,7 @@
 #include <cstdlib>
 
 using namespace std;
-TCPServerSocket server("191.36.11.37",8000);  
+TCPServerSocket server("191.36.10.242",8000);  
 enum estado{aguarda_conexao,preparando_jogo,aguarda_letra,finaliza_jogo};
 
 list<Connection*> client_list;
@@ -27,17 +27,21 @@ int decodificador(string data){
 	TMensagem * other;
 		
 	while (other = decoder.deserialize()){
-		cout << "Estrutura de dados obtida da decodificação XER:" << endl;
+		//cout << "Estrutura de dados obtida da decodificação XER:" << endl;
 		//other->show();
 		TMensagem::Choice_msg & tipo=other->get_msg();
 		if(tipo.get_choice() == msg_PR_acess){
-		  cout<<"Acesso"<<endl;
+		  cout<<"Jogador conectado"<<endl;
 		  TAcessar acesso =tipo.get_acess();
-		  
 		  cout<<"usuario: "<< acesso.get_acess()<<endl;
 		}else if(tipo.get_choice() ==msg_PR_palavra){
 		  cout<<"Dados"<<endl;  
-		} 
+		}else if(tipo.get_choice() == msg_PR_letter){
+			TLetra letter = tipo.get_letter();
+			string letra_recebida = letter.get_letra();
+			cout << letra_recebida << endl;
+
+		}
 	}
 	
 	   
@@ -67,14 +71,12 @@ int cria_servidor(){
             
             pkt.check_constraints();
             pkt.show();
-            
-         	  ostringstream out;
+            ostringstream out;
             TMensagem::XerSerializer encoder(out);
             encoder.serialize(pkt);	
             sock.send(out.str());
             return 1;
-
-                  
+                
             
          
          } catch (TCPServerSocket::DisconnectedException e) {
@@ -96,9 +98,10 @@ TMensagem::Choice_msg & msg = pkt.get_msg();
       info.set_info("Novo jogo iniciando, aguarde...");
       
       pkt.check_constraints();
-      pkt.show();
+      //pkt.show();
       
-   	  ostringstream out;
+   	  
+      ostringstream out;
       TMensagem::XerSerializer encoder(out);
       encoder.serialize(pkt);
       Connection *jogador1 = *client_list.begin();
@@ -125,7 +128,7 @@ Connection *jogador2  = *client_list.rbegin();
       TPalavra palavra = msg1.get_palavra();
       palavra.set_palavra(nova);
       pkt1.check_constraints();
-      pkt1.show();
+      //pkt1.show();
       ostringstream out1;
       TMensagem::XerSerializer encoder1(out1);
       encoder1.serialize(pkt1);
@@ -165,6 +168,7 @@ void envia_permissao(int jogador, int pontos, int perm){
 
 int maquina(estado tipo){
   switch(tipo){
+ 
   case aguarda_conexao:
   
     cria_servidor();
@@ -182,23 +186,27 @@ int maquina(estado tipo){
   
   case preparando_jogo:{
   
-  envia_permissao(1,10,0);
-  envia_permissao(2,10,1);
-    
- 
-  
- 
-    
-    
-   
-    
-    
+  	envia_permissao(1,10,0);
+  	envia_permissao(2,10,1);
+     	_Estado=aguarda_letra;
     
   break;
   }
-  case aguarda_letra :
   
+  case aguarda_letra: {
+ 	cout<<"Aguardando letra"<<endl;
+	TMensagem pkt;  
+	TMensagem::Choice_msg & msg = pkt.get_msg();
+	string recebido = server.recv(1024);
+	while(true){
+		Connection & sock = server.wait(0);
+		decodificador(recebido);
+	}
+   
+
   break;
+  }
+
   case finaliza_jogo:
   
   break;

@@ -67,7 +67,7 @@ int main() {
 
   TMensagem pkt;  
   
-  client.connect("191.36.11.37",8000);
+  client.connect("191.36.10.242",8000);
   cout <<"=================================="<<endl<<"Bem vindo ao Jogo"<<endl<<"=================================="<< endl;
   
   TMensagem::Choice_msg & msg = pkt.get_msg();
