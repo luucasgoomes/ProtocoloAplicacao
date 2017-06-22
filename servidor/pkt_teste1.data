@@ -1,0 +1,5 @@
+TMensagem pkt;
+ 
+  // define o valor do campo "id"
+  pkt.set_id(8);
+  pkt.set_nome("manoel");

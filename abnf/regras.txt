@@ -1,0 +1,3 @@
+header="E-mail: " nome WSP %d60 email %d62 CRLF
+email=1*16ALPHA %d64 1*8(1*16ALPHA ".") 1*16ALPHA
+nome=1*16ALPHA *3(WSP 1*16ALPHA)

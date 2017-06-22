@@ -1,0 +1,49 @@
+Mensagem DEFINITIONS AUTOMATIC TAGS ::=
+BEGIN
+ 
+Login ::= SEQUENCE {
+  usuario PrintableString (SIZE(1..12)),
+  senha PrintableString (SIZE(4..12))
+}
+Acessar ::= SEQUENCE {
+  acess INTEGER
+}
+
+Informacao ::= SEQUENCE {
+   info PrintableString (SIZE(2..52))
+}
+
+Palavra::= SEQUENCE {
+  palavra PrintableString (SIZE(2..52))
+}
+
+Letra::= SEQUENCE {
+  letra PrintableString (SIZE(1))
+}
+
+Permissao ::= SEQUENCE{
+  permissao INTEGER,
+  pontuacao INTEGER
+}
+
+Resultado ::=SEQUENCE{
+  resultado PrintableString(SIZE(1..12))
+}
+ 
+ 
+Mensagem ::= SEQUENCE {
+  id INTEGER,
+  msg CHOICE {
+    inicio Login,
+    acess Acessar,
+    info Informacao,
+    palavra Palavra,
+    letter Letra,
+    permission Permissao,
+    result Resultado
+    
+    
+  }
+}
+ 
+END
